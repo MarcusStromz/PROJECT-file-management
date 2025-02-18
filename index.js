@@ -1,11 +1,13 @@
-const fileManager = require("./fileManager")
+const fileManager = require("./fileManager");
 const readlineSync = require('readline-sync');
 const path = require('path');
 const { read } = require("fs");
 
-function main() {
+async function main() {
     const baseDir = path.join(__dirname, 'my_files');
-    
+
+    fileManager.createDirectory(baseDir)
+
     while(true) {
        console.log("\nMenu:"); 
        console.log("1. Criar Arquivo"); 
@@ -15,37 +17,58 @@ function main() {
        console.log("5. Deletar Arquivo");
        console.log("6. Sair");  
 
-       const choice = readlineSync.question('Escolha uma opção: ')
+       const choice = readlineSync.question('Escolha uma opção: ');
 
-       switch(choice) {
+       try {
+        switch(choice) {
             case '1':
                 const fileName = readlineSync.question('Digite o nome do arquivo: ');
                 const fileContent = readlineSync.question('Digite o conteúdo do arquivo (ou deixe em branco): ');
 
-                const createFilePath = path.join(__dirname, fileName)
+                const createFilePath = path.join(baseDir, fileName)
 
-                const fileMessage = fileManager.createFile(createFilePath, fileContent)
+                const fileMessage = await fileManager.createFile(createFilePath, fileContent)
 
-                console.log('fileMessage');
+                console.log(fileMessage);
                 break;
             case '2':
-                console.log('Arquivo no diretório:');
+                const files = await fileManager.listFiles(baseDir);
+                console.log('Arquivo no diretório:', files);
                 break;
             case '3':
-                console.log('Conteúdo do arquivo:');
+                const readFileName = readlineSync.question(
+                    "Digite o nome e extensão do arquivo: "
+                );
+                const readFilePath = path.join(baseDir, readFileName);
+                const content = await fileManager.readFile(readFilePath);
+                console.log(content);
                 break;
             case '4':
-                console.log('Arquivo escrito com sucesso.');
-                break; 
+                const writeFilePath = path.join(baseDir, writeFileName);
+                const newContent = readlineSync.question(
+                    "Digite o conteúdo a ser escrito: "
+                );
+                const message = await fileManager.writeFile(writeFilePath, newContent);
+                console.log(message);
+                break;
+ 
             case '5':
-                console.log('Arquivo deletado com sucesso.');
+                const deleteFileName = readlineSync.question(
+                    "Digite o nome do arquivo: "
+                );
+                const deleteFilePath = path.join(baseDir, deleteFileName);
+                const messageDelete = await fileManager.deleteFile(deleteFilePath);
+                console.log(messageDelete);
                 break;
             case '6':
                 console.log('Saindo...');
                 return;
             default:
                 console.log('Opção inválida. Tente novamente.');    
-       }
+        }        
+        } catch (err) {
+            console.log(err);
+        }
     }
 }
 
