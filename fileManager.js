@@ -1,5 +1,4 @@
-const fs = require("fs");
-const path = require("path");
+import fs from "fs";
 
 function createDirectory(dirPath) {
     return new Promise((resolve, reject) => {
@@ -78,4 +77,10 @@ function deleteFile(filePath) {
 }
 
 
-module.exports = {createDirectory, createFile, listFiles, readFile, writeFile, deleteFile};
+export default {
+    createDirectory,
+    createFile,
+    listFiles,
+    readFile,
+    writeFile,
+    deleteFile};
